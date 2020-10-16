@@ -86,9 +86,14 @@ def add_gaia_figure_elements(tpf, magnitude_limit=18,targ_mag=10.):
     # Gently size the points by their Gaia magnitude
     sizes = 128.0 / 2**(result['Gmag']/targ_mag)#64.0 / 2**(result['Gmag']/5.0)
     one_over_parallax = 1.0 / (result['Plx']/1000.)
-    r = (coords[:, 0]+tpf.column,coords[:, 1]+tpf.row,result['Gmag'])
+    x = coords[:, 0]+tpf.column
+    y = coords[:, 1]+tpf.row
+    # Only keep points that actually fall within the image footprint:
+    visible = np.logical_and(np.logical_and(x >= tpf.column - 0.5, x <=  tpf.column + nx + 0.5) ,
+        np.logical_and(y >= tpf.row - 0.5, y <= tpf.row + ny + 0.5))
+    r = (x[visible], y[visible],result['Gmag'][visible])
 
-    return r,result
+    return r,result[visible]
 
 # Plot orientation
 def plot_orientation(tpf):
@@ -351,8 +356,13 @@ if __name__ == "__main__":
         add = 0
         if np.int(maglim) % 2 != 0:
             add = 1
-        maxmag = np.int(args.maglim) + add
-        legend_mags = np.linspace(-2,maxmag,np.int((maxmag+2)/2+1))
+        maxmag = np.int(maglim) + add
+        # Only show the largest symbol if there are actually stars brighter than target: 
+        if (np.min(gaiamags) < gaiamags[this]):
+            legend_min = -2
+        else:
+            legend_min = 0
+        legend_mags = np.linspace(legend_min,maxmag,np.int((maxmag+2)/2.))
         fake_sizes = mag + legend_mags #np.array([mag-2,mag,mag+2,mag+5, mag+8])
         for f in fake_sizes:
             size = 128.0 / 2**((f-mag))
