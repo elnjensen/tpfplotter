@@ -119,6 +119,9 @@ def plot_orientation(tpf):
     if (abs(np.rad2deg(theta)) < 30):
         x0 -= 0.08*nx
         y0 -= 0.08*ny
+    elif (np.rad2deg(theta) >= 30 and np.rad2deg(theta) <= 122):
+        y0 -= 0.08*ny
+        
     x1, y1 = 1.*np.cos(theta), 1.*np.sin(theta)
     plt.arrow(x0,y0,x1,y1,head_width=0.2,color='white')
     plt.text(x0+1.6*x1,y0+1.6*y1,'E',color='white',ha='center',va='center')
