@@ -41,13 +41,13 @@ def cli():
     parser.add_argument("-L", "--LIST", help="Only fit the LC", action="store_true")
     parser.add_argument("-S", "--SAVEGAIA", help="Save Gaia sources", action="store_true")
     parser.add_argument("-C", "--COORD", help="Use coordinates", default=False)
-    parser.add_argument("--maglim", default=5., help="Maximum magnitude contrast respect to TIC")
+    parser.add_argument("--maglim", default=5., type=float, help="Maximum magnitude contrast respect to TIC")
     parser.add_argument("--sector", default=None, help="Select Sector if more than one")
     parser.add_argument("--gid", default=None, help="Gaia ID")
-    parser.add_argument("--gmag", default=None, help="Gaia mag")
+    parser.add_argument("--gmag", default=None, type=float, help="Gaia mag")
     parser.add_argument("--legend", default='best', help="Legend location")
-    parser.add_argument("--depth", default=None, help="Depth in ppt, used to find maglim")
-    parser.add_argument("--extramag", default=None, help="Mag offset beyond that from depth")
+    parser.add_argument("--depth", default=None, type=float, help="Depth in ppt, used to find maglim")
+    parser.add_argument("--extramag", default=None, type=float, help="Mag offset beyond that from depth")
     args = parser.parse_args()
     return args
 
@@ -324,7 +324,7 @@ if __name__ == "__main__":
         # Gaia sources
         # Get mag limits from depth if passed in:
         if (args.depth is not None):
-            maglim = -2.5*np.log10(depth/1000.)  # Depth assumed to be ppt
+            maglim = -2.5*np.log10(args.depth/1000.)  # Depth assumed to be ppt
             print("Using depth for magnitude limit, --maglim argument is ignored.")
         else:
             maglim = args.maglim
