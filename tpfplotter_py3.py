@@ -119,13 +119,14 @@ def plot_orientation(tpf):
     # args to account for handedness of RA/Dec vs. x/y coords: 
     theta = np.arctan((dec10-dec00)/(cosdec*(ra00-ra10)))
     if (ra10-ra00) < 0.0: theta += np.pi
-    #theta = -22.*np.pi/180.
     # If angle is small, arrows can be a bit closer to corner:
     if (abs(np.rad2deg(theta)) < 30):
         x0 -= 0.08*nx
         y0 -= 0.08*ny
     elif (np.rad2deg(theta) >= 30 and np.rad2deg(theta) <= 122):
         y0 -= 0.08*ny
+    elif (np.rad2deg(theta) <= -30 and np.rad2deg(theta) >= -120):
+        x0 -= 0.08*nx
         
     x1, y1 = 1.*np.cos(theta), 1.*np.sin(theta)
     plt.arrow(x0,y0,x1,y1,head_width=0.2,color='white')
