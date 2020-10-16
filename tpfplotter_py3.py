@@ -46,6 +46,8 @@ def cli():
     parser.add_argument("--gid", default=None, help="Gaia ID")
     parser.add_argument("--gmag", default=None, help="Gaia mag")
     parser.add_argument("--legend", default='best', help="Legend location")
+    parser.add_argument("--depth", default=None, help="Depth in ppt, used to find maglim")
+    parser.add_argument("--extramag", default=None, help="Mag offset beyond that from depth")
     args = parser.parse_args()
     return args
 
@@ -320,7 +322,19 @@ if __name__ == "__main__":
                                                    1, 1, color=maskcolor, fill=False,alpha=1,lw=2))
 
         # Gaia sources
-        r, res = add_gaia_figure_elements(tpf,magnitude_limit=mag+np.float(args.maglim),targ_mag=mag)
+        # Get mag limits from depth if passed in:
+        if (args.depth is not None):
+            maglim = -2.5*np.log10(depth/1000.)  # Depth assumed to be ppt
+            print("Using depth for magnitude limit, --maglim argument is ignored.")
+        else:
+            maglim = args.maglim
+            
+        if (args.extramag is not None):
+            maglim += args.extramag
+            
+        print("Using mag limit of {:0.2f} relative to target star.".format(maglim))
+                    
+        r, res = add_gaia_figure_elements(tpf,magnitude_limit=mag+np.float(maglim),targ_mag=mag)
         x,y,gaiamags = r
         x, y, gaiamags=np.array(x)+0.5, np.array(y)+0.5, np.array(gaiamags)
         size = 128.0 / 2**((gaiamags-mag))
@@ -332,7 +346,7 @@ if __name__ == "__main__":
 
         # Legend
         add = 0
-        if np.int(args.maglim) % 2 != 0:
+        if np.int(maglim) % 2 != 0:
             add = 1
         maxmag = np.int(args.maglim) + add
         legend_mags = np.linspace(-2,maxmag,np.int((maxmag+2)/2+1))
