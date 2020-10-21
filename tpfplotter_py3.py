@@ -358,12 +358,10 @@ if __name__ == "__main__":
         if np.int(maglim) % 2 != 0:
             add = 1
         maxmag = np.int(maglim) + add
+        legend_mags = np.linspace(0,maxmag,np.int(maxmag/2.)+1)
         # Only show the largest symbol if there are actually stars brighter than target: 
         if (np.min(gaiamags) < gaiamags[this]):
-            legend_min = -2
-        else:
-            legend_min = 0
-        legend_mags = np.linspace(legend_min,maxmag,np.int((maxmag+2)/2.))
+            legend_mags = np.insert(legend_mags, 0, -1)
         fake_sizes = mag + legend_mags #np.array([mag-2,mag,mag+2,mag+5, mag+8])
         for f in fake_sizes:
             size = 128.0 / 2**((f-mag))
